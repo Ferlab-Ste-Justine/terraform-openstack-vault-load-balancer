@@ -82,3 +82,19 @@ variable "install_dependencies" {
   type = bool
   default = true
 }
+
+variable "tls" {
+  description = "Configuration for a secure vault communication over tls"
+  type        = object({
+    ca_certificate     = string
+    client_certificate = string
+    client_key         = string
+    client_auth        = bool
+  })
+  default = {
+    ca_certificate     = ""
+    client_certificate = ""
+    client_key         = ""
+    client_auth        = false
+  }
+}

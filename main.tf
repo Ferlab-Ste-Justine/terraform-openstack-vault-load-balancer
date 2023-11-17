@@ -51,7 +51,7 @@ locals {
       {
         filename     = "vault_lb.cfg"
         content_type = "text/cloud-config"
-        content      = module.vault_lb_configs.configuration
+        content      = module.vault_load_balancer_configs.configuration
       },
       {
         filename     = "node_exporter.cfg"
