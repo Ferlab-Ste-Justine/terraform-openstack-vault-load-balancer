@@ -98,3 +98,45 @@ variable "tls" {
     client_auth        = false
   }
 }
+
+variable "ssh_host_key_rsa" {
+  description = "Predefined rsa ssh host key"
+  type        = object({
+    public  = string
+    private = string
+  })
+  default     = {
+    public  = ""
+    private = ""
+  }
+}
+
+variable "ssh_host_key_ecdsa" {
+  description = "Predefined ecdsa ssh host key"
+  type        = object({
+    public  = string
+    private = string
+  })
+  default     = {
+    public  = ""
+    private = ""
+  }
+}
+
+variable "ssh_tunnel" {
+  description = "Setting for restricting the bastion access via an ssh tunnel only"
+  type        = object({
+    enabled = bool
+    ssh     = object({
+      user           = string
+      authorized_key = string
+    })
+  })
+  default     = {
+    enabled = false
+    ssh     = {
+      user           = ""
+      authorized_key = ""
+    }
+  }
+}

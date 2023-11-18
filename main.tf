@@ -9,7 +9,7 @@ locals {
 }
 
 module "vault_load_balancer_configs" {
-  source               = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//vault-load-balancer?ref=v0.8.0"
+  source               = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//vault-load-balancer?ref=v0.15.0"
   install_dependencies = var.install_dependencies
   tls                  = var.tls
   haproxy              = {
@@ -21,12 +21,25 @@ module "vault_load_balancer_configs" {
 }
 
 module "prometheus_node_exporter_configs" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//prometheus-node-exporter?ref=v0.14.2"
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//prometheus-node-exporter?ref=v0.15.0"
   install_dependencies = var.install_dependencies
 }
 
+module "ssh_tunnel_configs" {
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//ssh-tunnel?ref=v0.15.0"
+  ssh_host_key_rsa = var.ssh_host_key_rsa
+  ssh_host_key_ecdsa = var.ssh_host_key_ecdsa
+  tunnel = {
+    ssh = var.ssh_tunnel.ssh
+    accesses = [{
+      host = "127.0.0.1"
+      port = "*"
+    }]
+  }
+}
+
 module "chrony_configs" {
-  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//chrony?ref=v0.14.2"
+  source = "git::https://github.com/Ferlab-Ste-Justine/terraform-cloudinit-templates.git//chrony?ref=v0.15.0"
   install_dependencies = var.install_dependencies
   chrony = {
     servers  = var.chrony.servers
@@ -59,6 +72,11 @@ locals {
         content      = module.prometheus_node_exporter_configs.configuration
       }
     ],
+    var.ssh_tunnel.enabled ? [{
+      filename     = "ssh_tunnel.cfg"
+      content_type = "text/cloud-config"
+      content      = module.ssh_tunnel_configs.configuration
+    }] : [],
     var.chrony.enabled ? [{
       filename     = "chrony.cfg"
       content_type = "text/cloud-config"
